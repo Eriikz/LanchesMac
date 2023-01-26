@@ -16,10 +16,10 @@ namespace LanchesMac.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "6.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("LanchesMac.Models.Categoria", b =>
                 {
@@ -27,7 +27,7 @@ namespace LanchesMac.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoriaId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoriaId"), 1L, 1);
 
                     b.Property<string>("CategoriaNome")
                         .IsRequired()
@@ -50,7 +50,7 @@ namespace LanchesMac.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LancheId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LancheId"), 1L, 1);
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
@@ -62,17 +62,17 @@ namespace LanchesMac.Migrations
 
                     b.Property<string>("DescricaoDetalhada")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("EmEstoque")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ImagemUrl")
+                    b.Property<string>("ImagemThumbnailUrl")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("ImagemUrlThumnailUrl")
+                    b.Property<string>("ImagemUrl")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -91,7 +91,7 @@ namespace LanchesMac.Migrations
 
                     b.HasIndex("CategoriaId");
 
-                    b.ToTable("Lanche");
+                    b.ToTable("Lanches");
                 });
 
             modelBuilder.Entity("LanchesMac.Models.Lanche", b =>
