@@ -1,5 +1,6 @@
 ﻿using LanchesMac.Context;
 using LanchesMac.Models;
+using LanchesMac.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,26 +19,51 @@ namespace LanchesMac.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: Admin/AdminPedidos
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.Pedidos.ToListAsync());
-        //}
+        public IActionResult PedidoLanches(int? id)
+        {
+            var pedido = _context.Pedidos
+                         .Include(pd => pd.PedidoItens)
+                         .ThenInclude(l => l.Lanche)
+                         .FirstOrDefault(p => p.PedidoId == id);
 
-        public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "Nome")
+            if (pedido == null)
+            {
+                Response.StatusCode = 404;
+                return View("PedidoNotFound", id.Value);
+            }
+
+            PedidoLancheViewModel pedidoLanches = new PedidoLancheViewModel()
+            {
+                Pedido = pedido,
+                PedidoDetalhes = pedido.PedidoItens
+            };
+            return View(pedidoLanches);
+        }
+
+            // GET: Admin/AdminPedidos
+            //public async Task<IActionResult> Index()
+            //{
+            //    return View(await _context.Pedidos.ToListAsync());
+            //}
+            public async Task<IActionResult> Index(string filter, int pageindex = 1, string sort = "Nome")
         {
             var resultado = _context.Pedidos.AsNoTracking()
-                .AsQueryable();
+                                      .AsQueryable();
 
-            var model = await PagingList.CreateAsync(resultado, 5, pageindex, sort, "Nome");
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                resultado = resultado.Where(p => p.Nome.Contains(filter));
+            }
+
+            var model = await PagingList.CreateAsync(resultado, 3, pageindex, sort, "Nome");
             model.RouteValue = new RouteValueDictionary { { "filter", filter } };
 
             return View(model);
-
         }
 
-        // GET: Admin/AdminPedidos/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+            // GET: Admin/AdminPedidos/Details/5
+         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -46,6 +72,7 @@ namespace LanchesMac.Areas.Admin.Controllers
 
             var pedido = await _context.Pedidos
                 .FirstOrDefaultAsync(m => m.PedidoId == id);
+
             if (pedido == null)
             {
                 return NotFound();
